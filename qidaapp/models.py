@@ -1,31 +1,32 @@
-from django.db.models import Model, CharField, Index, ForeignKey, CASCADE
-from django.urls import reverse
+from django.db import models
 
 
-class University(Model):
-    full_name = CharField(
+class University(models.Model):
+    full_name = models.CharField(
         max_length=100,
-        verbose_name='university full name',
+        verbose_name='university full name'
     )
 
-    def __str__(self):
-        return self.full_name
 
-    def get_absolute_url(self):
-        return reverse('university_detail', args=[str(self.id)])
+class Student(models.Model):
+    first_name = models.CharField('first name', max_length=30)
+    last_name = models.CharField('last name', max_length=30)
 
-class Student(Model):
-    first_name = CharField('first name', max_length=30)
-    last_name = CharField('last name', max_length=30)
-    university = ForeignKey(
+    university = models.ForeignKey(
         University,
-        on_delete = CASCADE,
-        related_name='students',
-        related_query_name='person',
+        on_delete=models.CASCADE,
     )
 
-    def __str__(self):
-        return '%s %s' % (self.first_name, self.last_name)
 
-    def get_absolute_url(self):
-        return reverse('student_detail', args=[str(self.id)])
+class Degre(models.Model):
+    name = models.CharField('degre name', max_length=30)
+    field = models.CharField('degre field', max_length=30)
+
+    university = models.ForeignKey(
+        University,
+        on_delete=models.CASCADE,
+    )
+
+    participants = models.ManyToManyField(
+        Student
+    )
